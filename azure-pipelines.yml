@@ -17,21 +17,17 @@ steps:
 - checkout: self
 
 # Loop through each directory containing test cases
-- script: |
-    for dir in $(ls -d */); do
-      cd $dir
-      if [ -f "project.json" ]; then
-        echo "Building $dir..."
-        uipath pack --projectJsonPath "project.json" --outputPath $(Build.ArtifactStagingDirectory)/$dir
-      else
-        echo "No project.json found in $dir. Skipping build."
-      fi
-      cd ..
+- bash: |
+    shopt -s globstar
+    for project in **/project.json; do
+      dir=$(dirname "$project")
+      echo "Building $dir..."
+      uipath pack --projectJsonPath "$project" --outputPath "$(Build.ArtifactStagingDirectory)/$dir"
     done
   displayName: 'Build and pack test cases'
 
 # Deploy the test cases to UiPath Orchestrator
-- script: |
+- bash: |
     for package in $(find $(Build.ArtifactStagingDirectory) -name "*.nupkg"); do
       echo "Deploying $package..."
       uipath deploy --packagesPath $package --orchestratorConnection 'Uipath' --folderName 'VariantMatrix' # Update folderName as needed
