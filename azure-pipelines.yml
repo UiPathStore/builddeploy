@@ -6,10 +6,6 @@ pool:
   uipath
  
 steps:
-- script: |
-   cd "$(Build.ArtifactStagingDirectory)" && mkdir -p Output/BPA_Column_Operation_01
-   cd "$(Build.ArtifactStagingDirectory)" && mkdir -p Output/BPA_Column_Operation_02
-  displayName: 'Create Required output folder'
  
 - task: UiPathPack@4
   inputs:
@@ -22,14 +18,18 @@ steps:
     orchestratorConnection: 'Uipath'
     packagesPath: '$(Build.ArtifactStagingDirectory)/Output/BPA_Column_Operation_01/'
     folderName: 'Variant_Matrix_Automations'
+
+- script: |
+   del /S "$(Build.ArtifactStagingDirectory)"/Output/*.nupkg
+  displayName: 'Create Required output folder'
 - task: UiPathPack@4
   inputs:
     versionType: 'AutoVersion'
     projectJsonPath: '$(Build.SourcesDirectory)/BPA_Column_Operation_02/project.json'
     orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/BPA_Column_Operation_02/'
+    outputPath: '$(Build.ArtifactStagingDirectory)/Output/'
 - task: UiPathDeploy@4
   inputs:
     orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/BPA_Column_Operation_02/'
+    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/'
     folderName: 'Variant_Matrix_Automations'
