@@ -18,17 +18,23 @@ steps:
 
 # Loop through each directory containing test cases
 - powershell: |
-    foreach ($project in Get-ChildItem -Recurse -Filter "project.json") {
-      $dir = $project.DirectoryName
-      Write-Host "Building $dir..."
-      uipath pack --projectJsonPath "$project.FullName" --outputPath "$(Build.ArtifactStagingDirectory)/$dir"
+    $projectFolders = Get-ChildItem -Directory -Path $(System.DefaultWorkingDirectory)
+    foreach ($folder in $projectFolders) {
+      $projectJson = Join-Path -Path $folder.FullName -ChildPath "project.json"
+      if (Test-Path $projectJson) {
+        Write-Host "Building $($folder.Name)..."
+        dotnet build $projectJson --configuration Release
+        dotnet pack $projectJson --output $(Build.ArtifactStagingDirectory)\$($folder.Name) --configuration Release
+      } else {
+        Write-Host "No project.json found in $($folder.Name). Skipping build."
+      }
     }
   displayName: 'Build and pack test cases'
 
 # Deploy the test cases to UiPath Orchestrator
-- powershell: |
-    foreach ($package in Get-ChildItem -Recurse -Filter "*.nupkg" -Path "$(Build.ArtifactStagingDirectory)") {
-      Write-Host "Deploying $($package.FullName)..."
-      uipath deploy --packagesPath $package.FullName --orchestratorConnection 'Uipath' --folderName 'VariantMatrix' # Update folderName as needed
-    }
-  displayName: 'Deploy test cases to UiPath Orchestrator'
+- task: UiPathDeploy@4
+  inputs:
+    orchestratorConnection: 'Uipath'
+    packagesPath: '$(Build.ArtifactStagingDirectory)'
+    folderName: 'VariantMatrix' # Update this with the folder name where you want to deploy the packages
+
