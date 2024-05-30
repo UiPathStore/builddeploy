@@ -7,8 +7,8 @@ pool:
  
 steps:
 - script: |
-   cd "$(Build.ArtifactStagingDirectory)/Output" && mkdir BPA_Column_Operation_01
-   cd "$(Build.ArtifactStagingDirectory)/Output" && mkdir BPA_Column_Operation_02
+   cd "$(Build.ArtifactStagingDirectory)" && mkdir -p Output/BPA_Column_Operation_01
+   cd "$(Build.ArtifactStagingDirectory)" && mkdir -p Output/BPA_Column_Operation_02
   displayName: 'Create Required output folder'
  
 - task: UiPathPack@4
