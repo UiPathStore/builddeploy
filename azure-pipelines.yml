@@ -6,89 +6,34 @@ pool:
 
 steps:
 - script: echo Hello, world!
-  displayName: 'Uipath Connection'
+  displayName: 'Run a one-line script'
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
-  displayName: 'Processing'
+  displayName: 'Run a multi-line script'
 
-- powershell: |
-    # List all subdirectories containing test cases
-    $testCaseDirectories = Get-ChildItem -Directory -Path "$(Build.SourcesDirectory)\*" | Where-Object { Test-Path "$($_.FullName)\project.json" }
-    
-    # Save the list of directories to a file
-    $testCaseDirectories | ForEach-Object { $_.FullName } | Out-File -FilePath "$(Build.ArtifactStagingDirectory)\testCaseDirectories.txt"
-  displayName: 'Find Test Case Directories'
+# Fetch the latest code from the Git repository
+- checkout: self
 
-- task: PowerShell@2
-  displayName: 'Loop through each test case and deploy'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $testCaseDirectories = Get-Content "$(Build.ArtifactStagingDirectory)\testCaseDirectories.txt"
-      
-      foreach ($dir in $testCaseDirectories) {
-        Write-Host "Processing test case in directory: $dir"
-        
-        # Define paths
-        $projectJsonPath = "$dir\project.json"
-        $outputPath = "$(Build.ArtifactStagingDirectory)\Output\$([System.IO.Path]::GetFileName($dir))"
-        $packJsonPath = "$(Build.ArtifactStagingDirectory)\PackOptions.json"
-        $deployJsonPath = "$(Build.ArtifactStagingDirectory)\DeployOptions.json"
+# Loop through each directory containing test cases
+- script: |
+    for dir in $(ls -d */); do
+      cd $dir
+      if [ -f "project.json" ]; then
+        echo "Building $dir..."
+        uipath pack --projectJsonPath "project.json" --outputPath $(Build.ArtifactStagingDirectory)/$dir
+      else
+        echo "No project.json found in $dir. Skipping build."
+      fi
+      cd ..
+    done
+  displayName: 'Build and pack test cases'
 
-        # Create PackOptions JSON
-        $packOptions = @{
-          type = "PackOptions"
-          options = @{
-            autoVersion = $true
-            projectPath = $projectJsonPath
-            destinationFolder = $outputPath
-            version = ""
-            outputType = "None"
-            orchestratorUrl = "https://cloud.uipath.com/..."
-            orchestratorTenant = "..."
-            refreshToken = "..."
-            accountName = "..."
-            traceLevel = "None"
-            telemetryOrigin = "Azure"
-            pipelineCorrelationId = "$(Build.BuildId)"
-            extensionClientOrganizationId = "your-organization-id"
-            extensionClientProjectId = "your-project-id"
-            telemetryOriginVersion = "4.2.5875113"
-            cliGetFlow = "CachedTool"
-            language = "en-US"
-          }
-        }
-        $packOptions | ConvertTo-Json | Out-File -FilePath $packJsonPath
-        
-        # Create DeployOptions JSON
-        $deployOptions = @{
-          type = "DeployOptions"
-          options = @{
-            packagesPath = $outputPath
-            folderName = "VariantMatrix"
-            orchestratorUrl = "https://cloud.uipath.com/..."
-            orchestratorTenant = "..."
-            refreshToken = "..."
-            accountName = "..."
-            traceLevel = "None"
-            telemetryOrigin = "Azure"
-            pipelineCorrelationId = "$(Build.BuildId)"
-            extensionClientOrganizationId = "your-organization-id"
-            extensionClientProjectId = "your-project-id"
-            telemetryOriginVersion = "4.2.5875113"
-            cliGetFlow = "CachedTool"
-            language = "en-US"
-          }
-        }
-        $deployOptions | ConvertTo-Json | Out-File -FilePath $deployJsonPath
-
-        # Pack the test case
-        Write-Host "Packing test case..."
-        & "C:\Program Files\dotnet\dotnet.exe" "C:\agent\_work\_tool\uipcli\23.10.8894-39673\x64\uipcli.dll" run $packJsonPath
-        
-        # Deploy the test case
-        Write-Host "Deploying test case..."
-        & "C:\Program Files\dotnet\dotnet.exe" "C:\agent\_work\_tool\uipcli\23.10.8894-39673\x64\uipcli.dll" run $deployJsonPath
-      }
+# Deploy the test cases to UiPath Orchestrator
+- script: |
+    for package in $(find $(Build.ArtifactStagingDirectory) -name "*.nupkg"); do
+      echo "Deploying $package..."
+      uipath deploy --packagesPath $package --orchestratorConnection 'Uipath' --folderName 'VariantMatrix' # Update folderName as needed
+    done
+  displayName: 'Deploy test cases to UiPath Orchestrator'
