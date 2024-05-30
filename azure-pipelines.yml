@@ -4,13 +4,6 @@ trigger:
 pool:
   uipath
 
-variables:
-  ProjectFolders: |
-    BPA_Column_Operation_01
-    BPA_Column_Operation_02
-    BPA_Column_Operation_03
-    BPA_Column_Operation_04
-
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
@@ -21,91 +14,28 @@ steps:
   displayName: 'Run a multi-line script'
 
 - task: PowerShell@2
-  displayName: 'Set project folders as pipeline variables'
   inputs:
     targetType: 'inline'
     script: |
-      $folders = @($env:ProjectFolders -split "`n")
-      $index = 0
-      foreach ($folder in $folders) {
-          $folder = $folder.Trim()
-          Write-Host "##vso[task.setvariable variable=ProjectFolder$index]$folder"
-          $index++
+      # Define the test case folder names
+      $testCaseFolders = @("BPA_Column_Operation_01", "BPA_Column_Operation_02", "BPA_Column_Operation_03", "BPA_Column_Operation_06")
+      
+      # Loop through each test case folder
+      foreach ($testCaseFolder in $testCaseFolders) {
+        Write-Host "Processing test case: $testCaseFolder"
+        
+        # Build and publish the test case
+        Write-Host "Building and publishing test case: $testCaseFolder"
+        UiPathPack@4
+          inputs:
+            versionType: 'AutoVersion'
+            projectJsonPath: "$(System.DefaultWorkingDirectory)/$testCaseFolder/project.json"
+            orchestratorConnection: 'Uipath'
+            outputPath: '$(Build.ArtifactStagingDirectory)/Output/$testCaseFolder'
+        
+        UiPathDeploy@4
+          inputs:
+            orchestratorConnection: 'Uipath'
+            packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$testCaseFolder'
+            folderName: $testCaseFolder
       }
-      Write-Host "##vso[task.setvariable variable=ProjectFolderCount]$index"
-
-- script: |
-    echo Packing and deploying folder 0
-  displayName: 'Pack and Deploy Folder 0'
-
-- task: UiPathPack@4
-  displayName: 'Pack UiPath Project Folder 0'
-  inputs:
-    versionType: 'AutoVersion'
-    projectJsonPath: '$(Build.SourcesDirectory)/$(ProjectFolder0)/project.json'
-    orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder0)'
-
-- task: UiPathDeploy@4
-  displayName: 'Deploy UiPath Package Folder 0'
-  inputs:
-    orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder0)'
-    folderName: 'VariantMatrix'
-
-- script: |
-    echo Packing and deploying folder 1
-  displayName: 'Pack and Deploy Folder 1'
-
-- task: UiPathPack@4
-  displayName: 'Pack UiPath Project Folder 1'
-  inputs:
-    versionType: 'AutoVersion'
-    projectJsonPath: '$(Build.SourcesDirectory)/$(ProjectFolder1)/project.json'
-    orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder1)'
-
-- task: UiPathDeploy@4
-  displayName: 'Deploy UiPath Package Folder 1'
-  inputs:
-    orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder1)'
-    folderName: 'VariantMatrix'
-
-- script: |
-    echo Packing and deploying folder 2
-  displayName: 'Pack and Deploy Folder 2'
-
-- task: UiPathPack@4
-  displayName: 'Pack UiPath Project Folder 2'
-  inputs:
-    versionType: 'AutoVersion'
-    projectJsonPath: '$(Build.SourcesDirectory)/$(ProjectFolder2)/project.json'
-    orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder2)'
-
-- task: UiPathDeploy@4
-  displayName: 'Deploy UiPath Package Folder 2'
-  inputs:
-    orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder2)'
-    folderName: 'VariantMatrix'
-
-- script: |
-    echo Packing and deploying folder 3
-  displayName: 'Pack and Deploy Folder 3'
-
-- task: UiPathPack@4
-  displayName: 'Pack UiPath Project Folder 3'
-  inputs:
-    versionType: 'AutoVersion'
-    projectJsonPath: '$(Build.SourcesDirectory)/$(ProjectFolder3)/project.json'
-    orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder3)'
-
-- task: UiPathDeploy@4
-  displayName: 'Deploy UiPath Package Folder 3'
-  inputs:
-    orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$(ProjectFolder3)'
-    folderName: 'VariantMatrix'
