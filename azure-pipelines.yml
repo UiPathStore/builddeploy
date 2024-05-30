@@ -7,8 +7,8 @@ pool:
  
 steps:
 - script: |
-   mkdir '$(Build.ArtifactStagingDirectory)/Output/1/'
-   mkdir '$(Build.ArtifactStagingDirectory)/Output/2/'
+   mkdir -p "$(Build.ArtifactStagingDirectory)"/Output/1
+   mkdir -p "$(Build.ArtifactStagingDirectory)"/Output/2
   displayName: 'Create Required output folder'
  
 - task: UiPathPack@4
