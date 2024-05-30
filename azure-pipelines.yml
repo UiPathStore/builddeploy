@@ -7,8 +7,8 @@ pool:
  
 steps:
 - script: |
-   mkdir -p "$(Build.ArtifactStagingDirectory)"/Output/1
-   mkdir -p "$(Build.ArtifactStagingDirectory)"/Output/2
+   cd "$(Build.ArtifactStagingDirectory)/Output" && mkdir BPA_Column_Operation_01
+   cd "$(Build.ArtifactStagingDirectory)/Output" && mkdir BPA_Column_Operation_02
   displayName: 'Create Required output folder'
  
 - task: UiPathPack@4
@@ -16,20 +16,20 @@ steps:
     versionType: 'AutoVersion'
     projectJsonPath: '$(Build.SourcesDirectory)/BPA_Column_Operation_01/project.json'
     orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/1/'
+    outputPath: '$(Build.ArtifactStagingDirectory)/Output/BPA_Column_Operation_01/'
 - task: UiPathDeploy@4
   inputs:
     orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/1/'
+    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/BPA_Column_Operation_01/'
     folderName: 'Variant_Matrix_Automations'
 - task: UiPathPack@4
   inputs:
     versionType: 'AutoVersion'
     projectJsonPath: '$(Build.SourcesDirectory)/BPA_Column_Operation_02/project.json'
     orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/2/'
+    outputPath: '$(Build.ArtifactStagingDirectory)/Output/BPA_Column_Operation_02/'
 - task: UiPathDeploy@4
   inputs:
     orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/2/'
+    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/BPA_Column_Operation_02/'
     folderName: 'Variant_Matrix_Automations'
