@@ -1,0 +1,9 @@
+{
+  "issueKeyTestcaseValues": {},
+  "testManagerBasePath": "https://cloud.uipath.com/smsjsk/defaulttenant/testmanager_",
+  "defaultProject": {
+    "id": "14e81fcf-dd33-0000-be97-0b46ab439ac5",
+    "name": "VariantMatrix",
+    "key": "VARIANTMATRIX"
+  }
+}

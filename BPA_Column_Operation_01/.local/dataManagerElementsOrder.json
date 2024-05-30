@@ -1,0 +1,78 @@
+{
+  "Workflows": [
+    {
+      "Path": null,
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [],
+      "ArgumentsSectionElementsOrder": null,
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    },
+    {
+      "Path": "BL_SortAscending_MatrixControl_PL.xaml",
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [
+        "inDate&Sequence_2"
+      ],
+      "ArgumentsSectionElementsOrder": [],
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    },
+    {
+      "Path": "Column_Operation_01.xaml",
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [
+        "inDate&Sequence_2",
+        "matrix_tab&Sequence_2",
+        "expand_tab&Sequence_2",
+        "product_filter&Sequence_2",
+        "Filter_checkbox&Sequence_2",
+        "Edit_Matrix&Sequence_2",
+        "module_tab&Sequence_2",
+        "part&Sequence_2",
+        "product&Sequence_2",
+        "sort_&Sequence_2",
+        "sort_a&Sequence_2",
+        "show_items&Sequence_2",
+        "reset_variant&Sequence_2",
+        "validate_tab&Sequence_2",
+        "matrix_export&Sequence_2"
+      ],
+      "ArgumentsSectionElementsOrder": [],
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    },
+    {
+      "Path": "../BPA_PL_03.xaml",
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [
+        "inDate&Sequence_2"
+      ],
+      "ArgumentsSectionElementsOrder": [],
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    },
+    {
+      "Path": "AWC_Workflows/AWC_Login_Flow.xaml",
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [
+        "is_LoginWindowappeared&Sequence_2",
+        "isLoggedIn&Sequence_2",
+        "isLoggedIn&Sequence_3",
+        "is_LoginWindowappeared&Sequence_3",
+        "url&Sequence_1"
+      ],
+      "ArgumentsSectionElementsOrder": [],
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    },
+    {
+      "Path": "AWC_Workflows/AWC_SignOut.xaml",
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [],
+      "ArgumentsSectionElementsOrder": [],
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    }
+  ]
+}
