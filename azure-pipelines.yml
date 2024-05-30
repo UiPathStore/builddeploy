@@ -17,5 +17,5 @@ steps:
 - task: UiPathDeploy@4
   inputs:
     orchestratorConnection: 'Uipath'
-    packagesPath: '(Build.ArtifactStagingDirectory)/Output/'
+    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/'
     folderName: 'Variant_Matrix_Automations'
