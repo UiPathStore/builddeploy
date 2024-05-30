@@ -17,19 +17,18 @@ steps:
 - checkout: self
 
 # Loop through each directory containing test cases
-- bash: |
-    shopt -s globstar
-    for project in **/project.json; do
-      dir=$(dirname "$project")
-      echo "Building $dir..."
-      uipath pack --projectJsonPath "$project" --outputPath "$(Build.ArtifactStagingDirectory)/$dir"
-    done
+- powershell: |
+    foreach ($project in Get-ChildItem -Recurse -Filter "project.json") {
+      $dir = $project.DirectoryName
+      Write-Host "Building $dir..."
+      uipath pack --projectJsonPath "$project.FullName" --outputPath "$(Build.ArtifactStagingDirectory)/$dir"
+    }
   displayName: 'Build and pack test cases'
 
 # Deploy the test cases to UiPath Orchestrator
-- bash: |
-    for package in $(find $(Build.ArtifactStagingDirectory) -name "*.nupkg"); do
-      echo "Deploying $package..."
-      uipath deploy --packagesPath $package --orchestratorConnection 'Uipath' --folderName 'VariantMatrix' # Update folderName as needed
-    done
+- powershell: |
+    foreach ($package in Get-ChildItem -Recurse -Filter "*.nupkg" -Path "$(Build.ArtifactStagingDirectory)") {
+      Write-Host "Deploying $($package.FullName)..."
+      uipath deploy --packagesPath $package.FullName --orchestratorConnection 'Uipath' --folderName 'VariantMatrix' # Update folderName as needed
+    }
   displayName: 'Deploy test cases to UiPath Orchestrator'
