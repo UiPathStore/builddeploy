@@ -7,6 +7,9 @@ pool:
  
 steps:
  
+- script: |
+   del /S "$(Build.ArtifactStagingDirectory)\Output\*.nupkg"
+  displayName: 'Create Required output folder'
 - task: UiPathPack@4
   inputs:
     versionType: 'AutoVersion'
@@ -33,3 +36,7 @@ steps:
     orchestratorConnection: 'Uipath'
     packagesPath: '$(Build.ArtifactStagingDirectory)/Output/'
     folderName: 'Variant_Matrix_Automations'
+
+- script: |
+   del /S "$(Build.ArtifactStagingDirectory)\Output\*.nupkg"
+  displayName: 'Create Required output folder'
