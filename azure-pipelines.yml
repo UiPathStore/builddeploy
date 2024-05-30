@@ -14,3 +14,8 @@ steps:
     projectJsonPath: 'BPA_Column_Operation_01/project.json'
     orchestratorConnection: 'Uipath'
     outputPath: '$(Build.ArtifactStagingDirectory)\Output'
+- task: UiPathDeploy@4
+  inputs:
+    orchestratorConnection: 'Uipath'
+    packagesPath: 'BPA_Column_Operation_01/project.json'
+    folderName: 'Variant_Matrix_Automations'
