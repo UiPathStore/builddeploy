@@ -13,29 +13,31 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      # Define the test case folder names
-      $testCaseFolders = @("BPA_Column_Operation_01", "BPA_Column_Operation_02", "BPA_Column_Operation_03", "BPA_Column_Operation_06")
-      
-      # Loop through each test case folder
-      foreach ($testCaseFolder in $testCaseFolders) {
+# Loop through each test case folder and run the UiPathPack and UiPathDeploy tasks
+- powershell: |
+    # Define the test case folder names
+    $testCaseFolders = @("BPA_Column_Operation_01", "BPA_Column_Operation_02", "BPA_Column_Operation_03", "BPA_Column_Operation_06")
+    
+    # Loop through each test case folder
+    foreach ($testCaseFolder in $testCaseFolders) {
+        Write-Host "##vso[task.setvariable variable=currentTestCaseFolder]$testCaseFolder"
         Write-Host "Processing test case: $testCaseFolder"
-        
-        # Build and publish the test case
-        Write-Host "Building and publishing test case: $testCaseFolder"
-        UiPathPack@4
-          inputs:
-            versionType: 'AutoVersion'
-            projectJsonPath: "$(System.DefaultWorkingDirectory)/$testCaseFolder/project.json"
-            orchestratorConnection: 'Uipath'
-            outputPath: '$(Build.ArtifactStagingDirectory)/Output/$testCaseFolder'
-        
-        UiPathDeploy@4
-          inputs:
-            orchestratorConnection: 'Uipath'
-            packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$testCaseFolder'
-            folderName: $testCaseFolder
-      }
+    }
+  displayName: 'Set test case variables'
+  
+# Build and publish the test case for each folder
+- task: UiPathPack@4
+  displayName: 'Pack test case - $(currentTestCaseFolder)'
+  inputs:
+    versionType: 'AutoVersion'
+    projectJsonPath: '$(System.DefaultWorkingDirectory)/$(currentTestCaseFolder)/project.json'
+    orchestratorConnection: 'Uipath'
+    outputPath: '$(Build.ArtifactStagingDirectory)/Output/$(currentTestCaseFolder)'
+
+- task: UiPathDeploy@4
+  displayName: 'Deploy test case - $(currentTestCaseFolder)'
+  inputs:
+    orchestratorConnection: 'Uipath'
+    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$(currentTestCaseFolder)'
+    folderName: '$(currentTestCaseFolder)'
+
