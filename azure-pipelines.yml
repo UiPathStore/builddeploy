@@ -13,20 +13,20 @@ steps:
     versionType: 'AutoVersion'
     projectJsonPath: '$(Build.SourcesDirectory)/BPA_Column_Operation_01/project.json'
     orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/'
+    outputPath: '$(Build.ArtifactStagingDirectory)/Output/1/'
 - task: UiPathDeploy@4
   inputs:
     orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/'
+    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/1/'
     folderName: 'Variant_Matrix_Automations'
 - task: UiPathPack@4
   inputs:
     versionType: 'AutoVersion'
     projectJsonPath: '$(Build.SourcesDirectory)/BPA_Column_Operation_02/project.json'
     orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/'
+    outputPath: '$(Build.ArtifactStagingDirectory)/Output/2/'
 - task: UiPathDeploy@4
   inputs:
     orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/'
+    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/2/'
     folderName: 'Variant_Matrix_Automations'
