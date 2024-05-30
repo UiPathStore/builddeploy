@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  uipath
+  vmImage: 'windows-latest'
 
 steps:
 - script: echo Hello, world!
@@ -13,28 +13,22 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 
-# Fetch the latest code from the Git repository
-- checkout: self
-
-# Loop through each directory containing test cases
-- powershell: |
-    $projectFolders = Get-ChildItem -Directory -Path $(System.DefaultWorkingDirectory)
-    foreach ($folder in $projectFolders) {
-      $projectJson = Join-Path -Path $folder.FullName -ChildPath "project.json"
-      if (Test-Path $projectJson) {
-        Write-Host "Building $($folder.Name)..."
-        dotnet build $projectJson --configuration Release
-        dotnet pack $projectJson --output $(Build.ArtifactStagingDirectory)\$($folder.Name) --configuration Release
-      } else {
-        Write-Host "No project.json found in $($folder.Name). Skipping build."
-      }
-    }
-  displayName: 'Build and pack test cases'
-
-# Deploy the test cases to UiPath Orchestrator
-- task: UiPathDeploy@4
+- task: PowerShell@2
+  displayName: 'Pack and Deploy UiPath Projects'
   inputs:
-    orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)'
-    folderName: 'VariantMatrix' # Update this with the folder name where you want to deploy the packages
+    targetType: 'inline'
+    script: |
+      $projectFolders = Get-ChildItem -Path "$(System.DefaultWorkingDirectory)" -Directory -Name
+
+      foreach ($folder in $projectFolders) {
+        Write-Host "Processing folder: $folder"
+        
+        # Pack the project
+        $outputPath = "$(Build.ArtifactStagingDirectory)\Output\$folder"
+        New-Item -Path $outputPath -ItemType Directory -Force
+        UiPath.Cmd pack "$(System.DefaultWorkingDirectory)\$folder\project.json" --output $outputPath
+        
+        # Deploy the package
+        UiPath.Cmd deploy $outputPath --folder 'VariantMatrix' --orchestrator 'Uipath'
+      }
 
