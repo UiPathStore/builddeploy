@@ -1,3 +1,4 @@
+
 trigger:
 - main
  
@@ -5,8 +6,10 @@ pool:
   uipath
  
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- script: |
+   mkdir '$(Build.ArtifactStagingDirectory)/Output/1/'
+   mkdir '$(Build.ArtifactStagingDirectory)/Output/2/'
+  displayName: 'Create Required output folder'
  
 - task: UiPathPack@4
   inputs:
