@@ -12,32 +12,13 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
-
-# Loop through each test case folder and run the UiPathPack and UiPathDeploy tasks
-- powershell: |
-    # Define the test case folder names
-    $testCaseFolders = @("BPA_Column_Operation_01", "BPA_Column_Operation_02", "BPA_Column_Operation_03", "BPA_Column_Operation_06")
-    
-    # Loop through each test case folder
-    foreach ($testCaseFolder in $testCaseFolders) {
-        Write-Host "##vso[task.setvariable variable=currentTestCaseFolder]$testCaseFolder"
-        Write-Host "Processing test case: $testCaseFolder"
-    }
-  displayName: 'Set test case variables'
-  
-# Build and publish the test case for each folder
 - task: UiPathPack@4
-  displayName: 'Pack test case - $(currentTestCaseFolder)'
   inputs:
     versionType: 'AutoVersion'
-    projectJsonPath: '$(System.DefaultWorkingDirectory)/$(currentTestCaseFolder)/project.json'
-    orchestratorConnection: 'Uipath'
-    outputPath: '$(Build.ArtifactStagingDirectory)/Output/$(currentTestCaseFolder)'
-
+    projectJsonPath: '/project.json'
+    outputPath: '$(Build.ArtifactStagingDirectory)\Output'
 - task: UiPathDeploy@4
-  displayName: 'Deploy test case - $(currentTestCaseFolder)'
   inputs:
     orchestratorConnection: 'Uipath'
-    packagesPath: '$(Build.ArtifactStagingDirectory)/Output/$(currentTestCaseFolder)'
-    folderName: '$(currentTestCaseFolder)'
-
+    packagesPath: '/project.json'
+    folderName: 'Variant_Matrix_Automations'
