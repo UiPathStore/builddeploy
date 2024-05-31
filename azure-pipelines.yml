@@ -66,6 +66,11 @@ steps:
     packagesPath: '$(Build.ArtifactStagingDirectory)/Output/'
     folderName: 'Variant_Matrix_Automations'
 
-    
+- task: UiPathTest@4
+  inputs:
+    testTarget: 'TestSet'
+    orchestratorConnection: 'Uipath'
+    testSet: 'VariantMatrix'
+    folderName: 'Variant_Matrix_Automations'
 
 
