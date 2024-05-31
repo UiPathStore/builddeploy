@@ -57,7 +57,7 @@ steps:
 - task: UiPathPack@4
   inputs:
     versionType: 'AutoVersion'
-    projectJsonPath: '$(Build.SourcesDirectory)/BPA_Column_Operation_04/project.json'
+    projectJsonPath: '$(Build.SourcesDirectory)/BPA_Column_Operation_06/project.json'
     orchestratorConnection: 'Uipath'
     outputPath: '$(Build.ArtifactStagingDirectory)/Output/'
 - task: UiPathDeploy@4
